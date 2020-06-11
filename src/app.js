@@ -5,6 +5,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config.js');
 const winston = require('winston');
+const BookmarksService = require('./BookmarksService.js');
 
 const app = express();
 
@@ -41,13 +42,11 @@ app.use(function validateBearerToken(req, res, next) {
   const apiToken = process.env.API_TOKEN;
   const authToken = req.get('Authorization');
 
-
   console.log(apiToken, authToken);
   if (!authToken || authToken.split(' ')[1] !== apiToken) {
     return res.status(401).json({
       error: `Unathorized request ${(apiToken, authToken.split(' ')[1])}`,
     });
-
   }
   next();
 });
@@ -59,8 +58,13 @@ app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
 
-app.get('/bookmarks', (req, res) => {
-  res.json(bookmarks);
+app.get('/bookmarks', (req, res, next) => {
+  const knexInstance = req.app.get('db');
+  BookmarksService.getAllItems(knexInstance)
+    .then((bookmarks) => {
+      res.json(bookmarks);
+    })
+    .catch(next);
 });
 
 app.get('/bookmarks/:id', (req, res) => {
