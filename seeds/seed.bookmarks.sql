@@ -1,4 +1,4 @@
-insert into bookmarks (title, link, description, rating) values (
+insert into bookmarks (title, url, description, rating) values (
 'bookmark1', 'https://www.bookmark1.com', 'bookmark1 description', 1
 ),(
 'bookmark2', 'https://www.bookmark2.com', 'bookmark2 description', 2
