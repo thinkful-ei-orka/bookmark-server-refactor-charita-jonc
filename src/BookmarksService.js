@@ -1,25 +1,25 @@
 const BookmarksService = {
   getAllItems(knex) {
-    return knex.select('*').from('shopping_list');
+    return knex.select('*').from('bookmarks');
   },
 
   insertItem(knex, newItem) {
     return knex
       .insert(newItem)
-      .into('shopping_list')
+      .into('bookmarks')
       .returning('*')
       .then((rows) => {
         return rows[0];
       });
   },
   getById(knex, id) {
-    return knex.from('shopping_list').select('*').where('id', id).first();
+    return knex.from('bookmarks').select('*').where('id', id).first();
   },
   deleteItem(knex, id) {
-    return knex('shopping_list').where({ id }).delete();
+    return knex('bookmarks').where({ id }).delete();
   },
   updateItem(knex, id, data) {
-    return knex('shopping_list').where({ id }).update(data);
+    return knex('bookmarks').where({ id }).update(data);
   },
 };
 module.exports = BookmarksService;
