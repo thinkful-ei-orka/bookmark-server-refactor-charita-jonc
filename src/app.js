@@ -31,7 +31,7 @@ const bookmarks = [
     title: 'test bookmark',
     url: 'https://www.test.com',
     rating: 3,
-    desc: 'test desc',
+    description: 'test desc',
   },
 ];
 
@@ -81,7 +81,7 @@ app.get('/bookmarks/:id', (req, res) => {
 
 app.post('/bookmarks', (req, res) => {
   console.log(req.body);
-  const { title, url, rating, desc } = req.body;
+  const { title, url, rating, description } = req.body;
 
   if (!title) {
     logger.error('Title is required');
@@ -105,7 +105,7 @@ app.post('/bookmarks', (req, res) => {
     title,
     url,
     rating,
-    desc,
+    description,
   };
 
   bookmarks.push(bookmark);
