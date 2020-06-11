@@ -50,4 +50,10 @@ describe.only('Bookmarks Endpoints', function () {
         .expect(200, testBookmarks);
     });
   });
+  it('Test for empty db', () => {
+    return supertest(app)
+      .get('/bookmarks')
+      .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+      .expect(200, []);
+  });
 });
