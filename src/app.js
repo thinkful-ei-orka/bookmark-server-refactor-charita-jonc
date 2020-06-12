@@ -69,14 +69,17 @@ app.get('/bookmarks', (req, res, next) => {
 
 app.get('/bookmarks/:id', (req, res) => {
   const { id } = req.params;
-  const bookmark = bookmarks.find((c) => c.id == id);
+  // const bookmark = bookmarks.find((c) => c.id == id);
+  const knexInstance = req.app.get('db');
 
-  if (!bookmark) {
-    logger.error(`Bookmark with id ${id} not found`);
-    return res.status(404).send('Bookmark Not Found');
-  }
+  // if (!bookmark) {
+  //   logger.error(`Bookmark with id ${id} not found`);
+  //   return res.status(404).send('Bookmark Not Found');
+  // }
 
-  res.json(bookmark);
+  BookmarksService.getById(knexInstance, id).then((bookmark) =>
+    res.json(bookmark)
+  );
 });
 
 app.post('/bookmarks', (req, res) => {

@@ -39,15 +39,25 @@ describe.only('Bookmarks Endpoints', function () {
 
   before('clean the table', () => db('bookmarks').truncate());
 
+  afterEach('cleanup after each run', () => db('bookmarks').truncate());
+
   context('Given there are bookmarks in the database', () => {
     beforeEach('insert bookmarks', () => {
       return db.into('bookmarks').insert(testBookmarks);
     });
-    it('GET / responds with 200 and all of the bookmarks', () => {
+    it('GET /bookmarks responds with 200 and all of the bookmarks', () => {
       return supertest(app)
         .get('/bookmarks')
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(200, testBookmarks);
+    });
+    it('GET /bookmarks/[id] responds with 200 of the specific bookmark', () => {
+      const bookmarkId = 2;
+      const expectedBookmark = testBookmarks[bookmarkId - 1];
+      return supertest(app)
+        .get(`/bookmarks/${bookmarkId}`)
+        .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+        .expect(200, expectedBookmark);
     });
   });
   it('Test for empty db', () => {
