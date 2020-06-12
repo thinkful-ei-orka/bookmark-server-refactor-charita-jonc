@@ -1,31 +1,10 @@
 const knex = require('knex');
 const app = require('../src/app.js');
+const { makeBookmarksArray } = require('./bookmarks.fixtures');
 
-describe.only('Bookmarks Endpoints', function () {
+describe('Bookmarks Endpoints', function () {
   let db;
-  let testBookmarks = [
-    {
-      id: 1,
-      title: 'first test bookmark',
-      url: 'https://www.test.com',
-      rating: 3,
-      description: 'test desc',
-    },
-    {
-      id: 2,
-      title: 'second test bookmark',
-      url: 'https://www.test.com',
-      rating: 4,
-      description: 'test desc',
-    },
-    {
-      id: 3,
-      title: 'third test bookmark',
-      url: 'https://www.test.com',
-      rating: 2,
-      description: 'test desc',
-    },
-  ];
+  const testBookmarks = makeBookmarksArray();
 
   before('make knex instance', () => {
     db = knex({
@@ -65,5 +44,30 @@ describe.only('Bookmarks Endpoints', function () {
       .get('/bookmarks')
       .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
       .expect(200, []);
+  });
+});
+describe(`POST /bookmarks`, () => {
+  it(`creates a new article and responds with a 201`, function () {
+    const newBookmark = {
+      title: 'test title',
+      url: 'https://www.testurl.com',
+      rating: 2,
+      description: 'test description',
+    };
+    return supertest(app)
+      .post('/bookmarks')
+      .send(newBookmark)
+      .expect(201)
+      .expect((res) => {
+        expect(res.body.title).to.eql(newBookmark.title);
+        expect(res.body.url).to.eql(newBookmark.url);
+        expect(res.body.rating).to.eql(newBookmark.rating);
+        expect(res.body.description).to.eql(newBookmark.description);
+        expect(res.body).to.have.property('id');
+        expect(res.headers.location).to.eql(`/bookmarks/${res.body.id}`);
+      })
+      .then((postRes) =>
+        supertest(app).get(`/bookmarks/${postRes.body.id}`).expect(postRes.body)
+      );
   });
 });
