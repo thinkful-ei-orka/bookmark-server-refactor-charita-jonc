@@ -3,11 +3,11 @@ const BookmarksService = require('./BookmarksService');
 
 const bookmarksRouter = express.Router();
 const jsonParser = express.json();
-
+//TODO: At post validation checkpoint 16
 bookmarksRouter
   .route('/')
   .get((req, res, next) => {
-    BookmarksService.getAllBookmarks(req.app.get('db'))
+    BookmarksService.getAllItems(req.app.get('db'))
       .then((bookmarks) => {
         res.json(bookmarks);
       })
