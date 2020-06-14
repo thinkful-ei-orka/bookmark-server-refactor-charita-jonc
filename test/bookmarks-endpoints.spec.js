@@ -35,7 +35,7 @@ describe('Bookmarks Endpoints', function () {
     });
   });
 
-  describe(`GET /bookmarks/:id`, () => {
+  describe.only(`GET /bookmarks/:id`, () => {
     context('Given there are bookmarks in the database', () => {
       const testBookmarks = makeBookmarksArray();
 
@@ -52,6 +52,31 @@ describe('Bookmarks Endpoints', function () {
       });
     });
   });
+  //TODO: at XSS place
+  context('Given and XSS attack bookmark', () => {
+    const maliciousBookmark = {
+      id: 911,
+      title: 'no no bookmark',
+      url: 'dont even try it',
+      rating: 1,
+      description: 'I cant believe it',
+    };
+    beforeEach('insert malicious bookmark', () => {
+      return db.into('bookmarks').insert([maliciousBookmark]);
+    });
+    it('remove the XSS attack content', () => {
+      return supertest(app)
+        .get(`/bookmarks/${maliciousBookmark.id}`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.title).to.eql('no no bookmark');
+          expect(res.body.url).to.eql('dont even try it');
+          expect(res.body.rating).to.eql(1);
+          expect(res.body.description).to.eql('I cant believe it');
+        });
+    });
+  });
+
   describe.only(`POST /bookmarks`, () => {
     it(`creates a new bookmark and responds with a 201`, function () {
       const newBookmark = {

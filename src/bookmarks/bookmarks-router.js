@@ -1,5 +1,6 @@
 const express = require('express');
 const BookmarksService = require('./BookmarksService');
+const xss = require('xss');
 
 const bookmarksRouter = express.Router();
 const jsonParser = express.json();
@@ -39,7 +40,12 @@ bookmarksRouter.route('/:id').get((req, res, next) => {
           error: { message: `Bookmark doesn't exist` },
         });
       }
-      res.json(bookmark);
+      res.json({
+        id: bookmark.id,
+        url: xss(bookmark.url),
+        rating: bookmark.rating,
+        description: xss(bookmark.description),
+      });
     })
     .catch(next);
 });
