@@ -1,6 +1,7 @@
 const knex = require('knex');
 const app = require('../src/app.js');
 const { makeBookmarksArray } = require('./bookmarks.fixtures.js');
+const supertest = require('supertest');
 
 describe('Bookmarks Endpoints', function () {
   let db;
@@ -51,7 +52,7 @@ describe('Bookmarks Endpoints', function () {
       });
     });
   });
-  describe(`POST /bookmarks`, () => {
+  describe.only(`POST /bookmarks`, () => {
     it(`creates a new bookmark and responds with a 201`, function () {
       const newBookmark = {
         title: 'test title',
@@ -76,6 +77,25 @@ describe('Bookmarks Endpoints', function () {
             .get(`/bookmarks/${postRes.body.id}`)
             .expect(postRes.body)
         );
+    });
+
+    const requiredField = ['title', 'url', 'rating', 'description'];
+    requiredField.forEach((field) => {
+      const newBookmark = {
+        title: 'second test bookmark',
+        url: 'https://www.test.com',
+        rating: 4,
+        description: 'test desc',
+      };
+      it(`responds with 400 and error message when the ${field} is missing`, () => {
+        delete newBookmark[field];
+        return supertest(app)
+          .post('/bookmarks')
+          .send(newBookmark)
+          .expect(400, {
+            error: { message: `Missing ${field} in request body` },
+          });
+      });
     });
   });
 });
